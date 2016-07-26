@@ -1,7 +1,15 @@
 import os, sys
 
 class VEB:
-	def __init__(self, power):
+	
+	def __init__(self, n, firstCall = True): 
+		if firstCall: 
+			power = 0
+			while (1 << (1 << power)) < n: 
+				power += 1
+		else: 
+			power = n
+
 		self.usize = 1 << (1 << power)
 		self.min = self.usize
 		self.max = -1
@@ -24,11 +32,11 @@ class VEB:
 		else:
 			block = key >> self.numbits
 			if self.aux is None:
-				self.aux = VEB(self.power-1)
+				self.aux = VEB(self.power-1, firstCall = False)
 			self.aux.insert(block)
 			if block not in self.children:
 				if self.power > 4: # only make real VEB for big trees
-					self.children[block] = VEB(self.power-1)
+					self.children[block] = VEB(self.power-1, firstCall = False)
 				else:
 					self.children[block] = BitVEB(self.power-1)
 
@@ -147,7 +155,7 @@ class BitVEB(VEB):
 		return str(self.bits)
 
 if __name__ == "__main__":
-	a = VEB(5)
+	a = VEB(1000)
 	a.insert(5)
 	a.insert(7)
 	a.insert(120)

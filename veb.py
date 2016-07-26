@@ -151,7 +151,7 @@ class BitVEB(VEB):
 		return str(self.bits)
 
 if __name__ == "__main__":
-	a = VEB(4)
+	a = VEB(5)
 	a.insert(5)
 	a.insert(7)
 	a.insert(120)

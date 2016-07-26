@@ -7,14 +7,15 @@ class VEB:
 		self.max = -1
 
 		if self.usize != 2:
+			self.power = power
 			self.numbits = 1 << (power-1)
-			self.aux = VEB(power-1) 
-			self.children = [VEB(power-1) for i in xrange(1 << self.numbits)]
+			self.aux = None  
+			self.children = {} 
 		#else:
 		#	self.a = 0
 		#	self.b = 0
 	
-	def isEmpty(self): 
+	def isEmpty(self):
 		return self.min > self.max
 
 	def insert(self, key):
@@ -22,7 +23,12 @@ class VEB:
 			res = (key != self.min and key != self.max)
 		else:
 			block = key >> self.numbits
+			if self.aux is None: 
+				self.aux = VEB(self.power-1)
 			self.aux.insert(block)
+			if block not in self.children: 
+				self.children[block] = VEB(self.power-1)
+
 			res = self.children[block].insert(key & ((1 << self.numbits) - 1))
 
 		self.min = min(self.min, key) 
@@ -40,9 +46,12 @@ class VEB:
 
 		block = key >> self.numbits
 		pos = key & ((1<< self.numbits) - 1)
-		if pos < self.children[block].max:
-			return key - pos + self.children[block].next(pos)
-		nextBlock = self.aux.next(block)
+		
+		if block in self.children:
+			if pos < self.children[block].max:
+				return key - pos + self.children[block].next(pos) #otherwise nextBlock needed
+
+		nextBlock = self.aux.next(block) #nextBlock should exist 
 		return key - pos + self.children[nextBlock].min + ((nextBlock - block)  << self.numbits)
 
 	def delete(self, key):
@@ -60,9 +69,13 @@ class VEB:
 			return
 		
 		block = key >> self.numbits
+		if block not in self.children:
+			return #block doesn't exist, so no continuing
+
 		self.children[block].delete(key & ((1<<self.numbits) - 1))
 
 		if self.children[block].isEmpty(): 
+			del self.children[block]
 			self.aux.delete(block)
 		
 		if self.min == key and self.max == key: 

@@ -1,5 +1,5 @@
 import bench
 
 bench.run()
-bench.sparseRun(1e4)
+bench.sparseRun(10000)
 

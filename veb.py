@@ -36,6 +36,9 @@ class VEB:
 		return res # return whether a new element was added
 
 	def next(self, key):
+		if self.isEmpty(): 
+			return None
+			
 		if self.usize == 2:
 			return self.max # key should be self.min so next is max
 

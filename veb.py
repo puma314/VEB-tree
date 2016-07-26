@@ -106,20 +106,16 @@ class BitVEB(VEB):
 		self.usize = 1 << (1 << power)
 		self.min = self.usize
 		self.max = -1
-		self.bits = [False for i in xrange(self.usize)]
+		self.bits = 0
 
 	def isEmpty(self):
 		return self.min > self.max
 
 	def insert(self, key):
-		if self.bits[key] == False:
-			self.bits[key] = True
-			if self.isEmpty():
-				self.min = key
-				self.max = key
-			else:
-				self.min = min(self.min, key)
-				self.max = max(self.max, key)
+		if ((self.bits >> key) & 1) == 0:
+			self.bits |= (1 << key)
+			self.min = min(self.min, key)
+			self.max = max(self.max, key)
 			return True
 		return False
 
@@ -127,18 +123,18 @@ class BitVEB(VEB):
 		if self.isEmpty() or key >= self.max:
 			return None
 		for i in xrange(key+1, self.max+1):
-			if self.bits[i]:
+			if ((self.bits >> i) & 1) == 1:
 				return i
 	def prev(self, key):
 		if self.isEmpty() or key <= self.min:
 			return None
 		for i in xrange(key-1, self.min-1, -1):
-			if self.bits[i]:
+			if ((self.bits >> i) & 1) == 1:
 				return i
 	
 	def delete(self, key):
-		if self.bits[key] == True:
-			self.bits[key] = False
+		if ((self.bits >> key) & 1) == 1:
+			self.bits ^= (1 << key)
 			if key == self.min and key == self.max:
 				self.min = self.usize
 				self.max = -1

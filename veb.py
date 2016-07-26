@@ -124,15 +124,15 @@ class BitVEB(VEB):
 	def next(self, key):
 		if self.isEmpty() or key >= self.max:
 			return None
-		for i in xrange(key+1, self.max+1):
-			if ((self.bits >> i) & 1) == 1:
-				return i
+		x = self.bits >> (key + 1)
+		# return lowest set bit after key bit
+		return (x & -x).bit_length() + key
+
 	def prev(self, key):
 		if self.isEmpty() or key <= self.min:
 			return None
-		for i in xrange(key-1, self.min-1, -1):
-			if ((self.bits >> i) & 1) == 1:
-				return i
+		# of the bits before key, return highest one
+		return (self.bits & ((1 << key) - 1)).bit_length()
 	
 	def delete(self, key):
 		if ((self.bits >> key) & 1) == 1:

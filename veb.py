@@ -27,7 +27,7 @@ class VEB:
 				self.aux = VEB(self.power-1)
 			self.aux.insert(block)
 			if block not in self.children:
-				if self.power > 3: # only make real VEB for big trees
+				if self.power > 4: # only make real VEB for big trees
 					self.children[block] = VEB(self.power-1)
 				else:
 					self.children[block] = BitVEB(self.power-1)

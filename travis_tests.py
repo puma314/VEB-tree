@@ -1,5 +1,5 @@
 import bench
 
-bench.run()
-bench.sparseRun(10000)
+bench.denseRun(1<<17)
+bench.sparseRun(30000,1<<64)
 

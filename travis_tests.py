@@ -1,3 +1,5 @@
+import veb
+
 a = veb.VEB(4)
 lim = 1 << (1 << 4)
 for i in xrange(lim):

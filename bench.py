@@ -1,7 +1,7 @@
 import veb, cProfile, random
 
 def run():
-	a = veb.VEB(4)
+	a = veb.VEB(100000)
 	lim = 1 << (1 << 4)
 	for i in xrange(lim):
 		a.insert(i)
@@ -15,7 +15,7 @@ def run():
 		assert(a.next(i) is None)
 
 def sparseRun(n):
-	a = veb.VEB(5)
+	a = veb.VEB(1 << 64)
 	lim = 1 << (1 << 5)
 	l = [random.randint(0, lim-1) for i in xrange(n)]
 	l = list(set(l)) # remove repeats

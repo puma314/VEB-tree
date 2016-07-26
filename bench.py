@@ -1,7 +1,7 @@
 import veb, cProfile, random
 
 def denseRun(usz):
-	a = veb.VEB(usz)
+	a = veb.createVEB(usz)
 	for i in xrange(usz):
 		a.insert(i)
 	for i in xrange(usz):
@@ -14,7 +14,7 @@ def denseRun(usz):
 		assert(a.next(i) is None)
 
 def sparseRun(n, usz):
-	a = veb.VEB(usz)
+	a = veb.createVEB(usz)
 	l = [random.randint(0, usz-1) for i in xrange(n)]
 	l = list(set(l)) # remove repeats
 	l.sort()

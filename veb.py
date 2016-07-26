@@ -1,19 +1,21 @@
-class VEB:
-	def __init__(self, exp, firstCall = True):
-		if firstCall:
-			realExp = 1
-			while (1 << realExp) < exp:
-				realExp <<= 1
-			exp = realExp
+def createVEB(usize):
+	exp = 1
+	while (1 << exp) < usize:
+		exp <<= 1
+	if exp > 8:
+		return VEB(exp)
+	else:
+		return BitVEB(exp)
 
+class VEB:
+	def __init__(self, exp):
 		self.usize = 1 << exp
 		self.min = self.usize
 		self.max = -1
 
-		if self.usize != 2:
-			self.numbits = exp >> 1
-			self.aux = None
-			self.children = {}
+		self.numbits = exp >> 1
+		self.aux = None
+		self.children = {}
 		#else:
 		#	self.a = 0
 		#	self.b = 0
@@ -22,35 +24,29 @@ class VEB:
 		return self.min > self.max
 
 	def insert(self, key):
-		if self.usize == 2:
-			res = (key != self.min and key != self.max)
-		else:
-			block = key >> self.numbits
-			if self.aux is None:
-				if self.numbits > 8:
-					self.aux = VEB(self.numbits, False)
-				else:
-					self.aux = BitVEB(self.numbits)
-			self.aux.insert(block)
-			if block not in self.children:
-				if self.numbits > 8: # only make real VEB for 16+ bit universe
-					self.children[block] = VEB(self.numbits, False)
-				else:
-					self.children[block] = BitVEB(self.numbits)
-
-			res = self.children[block].insert(key & ((1 << self.numbits) - 1))
+		block = key >> self.numbits
+		if self.aux is None:
+			if self.numbits > 8:
+				self.aux = VEB(self.numbits)
+			else:
+				self.aux = BitVEB(self.numbits)
+		self.aux.insert(block)
+		if block not in self.children:
+			if self.numbits > 8: # only make real VEB for 16+ bit universe
+				self.children[block] = VEB(self.numbits)
+			else:
+				self.children[block] = BitVEB(self.numbits)
 
 		self.min = min(self.min, key)
 		self.max = max(self.max, key)
-		return res # return whether a new element was added
+		# return whether a new element was added
+		return self.children[block].insert(key & ((1 << self.numbits) - 1))
 
 	def next(self, key):
 		if self.isEmpty() or key >= self.max:
 			return None
 		if key < self.min:
 			return self.min
-		if self.usize == 2:
-			return self.max # key should be self.min so next is max
 
 		block = key >> self.numbits
 		pos = key & ((1<< self.numbits) - 1)
@@ -64,16 +60,6 @@ class VEB:
 
 	def delete(self, key):
 		if self.isEmpty():
-			return
-		
-		if self.usize == 2:
-			if self.min == key and self.max == key:
-				self.min = self.usize
-				self.max = -1
-			elif self.min == key:
-				self.min = self.max
-			elif self.max == key:
-				self.max = self.min
 			return
 
 		block = key >> self.numbits
@@ -95,9 +81,6 @@ class VEB:
 			self.max = (self.aux.max << self.numbits) + self.children[self.aux.max].max
 	
 	def __str__(self):
-		if self.usize == 2:
-			return str((self.min, self.max))
-		
 		s = str((self.usize, self.min, self.max)) + "\nchildren"
 		for i in self.children:
 			s += str(i)
@@ -124,6 +107,8 @@ class BitVEB(VEB):
 	def next(self, key):
 		if self.isEmpty() or key >= self.max:
 			return None
+		if key < self.min:
+			return self.min
 		x = self.bits >> (key + 1)
 		# return lowest set bit after key bit
 		return (x & -x).bit_length() + key
@@ -131,6 +116,8 @@ class BitVEB(VEB):
 	def prev(self, key):
 		if self.isEmpty() or key <= self.min:
 			return None
+		if key > self.max:
+			return self.max
 		# of the bits before key, return highest one
 		return (self.bits & ((1 << key) - 1)).bit_length()
 	
@@ -146,10 +133,10 @@ class BitVEB(VEB):
 				self.max = self.prev(key)
 
 	def __str__(self):
-		return str(self.bits)
+		return bin(self.bits)
 
 if __name__ == "__main__":
-	a = VEB(200)
+	a = createVEB(200)
 	a.insert(5)
 	a.insert(7)
 	a.insert(120)

@@ -18,6 +18,7 @@ def sparseRun(n):
 	a = veb.VEB(5)
 	lim = 1 << (1 << 5)
 	l = [random.randint(0, lim-1) for i in xrange(n)]
+	l = list(set(l)) # remove repeats
 	l.sort()
 	for i in l:
 		a.insert(i)

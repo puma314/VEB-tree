@@ -1,23 +1,21 @@
 import veb, cProfile, random
 
-def run():
-	a = veb.VEB(100000)
-	lim = 1 << (1 << 4)
-	for i in xrange(lim):
+def denseRun(usz):
+	a = veb.VEB(usz)
+	for i in xrange(usz):
 		a.insert(i)
-	for i in xrange(lim):
+	for i in xrange(usz):
 		nxt = a.next(i-1)
 		assert(nxt == i)
-	for i in xrange(lim):
+	for i in xrange(usz):
 		a.delete(i)
 	assert(a.isEmpty())
-	for i in xrange(lim):
+	for i in xrange(usz):
 		assert(a.next(i) is None)
 
-def sparseRun(n):
-	a = veb.VEB(1 << 64)
-	lim = 1 << (1 << 5)
-	l = [random.randint(0, lim-1) for i in xrange(n)]
+def sparseRun(n, usz):
+	a = veb.VEB(usz)
+	l = [random.randint(0, usz-1) for i in xrange(n)]
 	l = list(set(l)) # remove repeats
 	l.sort()
 	n = len(l)
@@ -37,4 +35,6 @@ def sparseRun(n):
 		assert(a.next(l[i]) is None)
 
 if __name__ == "__main__":
-	cProfile.run("sparseRun(50000)")
+	cProfile.run("denseRun(1<<17)")
+	cProfile.run("sparseRun(50000, 1<<32)")
+	cProfile.run("sparseRun(90000, 1<<64)")

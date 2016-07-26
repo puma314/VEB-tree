@@ -1,22 +1,17 @@
-import os, sys
-
 class VEB:
-	
-	def __init__(self, n, firstCall = True): 
-		if firstCall: 
-			power = 0
-			while (1 << (1 << power)) < n: 
-				power += 1
-		else: 
-			power = n
+	def __init__(self, exp, firstCall = True):
+		if firstCall:
+			realExp = 1
+			while (1 << realExp) < exp:
+				realExp <<= 1
+			exp = realExp
 
-		self.usize = 1 << (1 << power)
+		self.usize = 1 << exp
 		self.min = self.usize
 		self.max = -1
 
 		if self.usize != 2:
-			self.power = power
-			self.numbits = 1 << (power-1)
+			self.numbits = exp >> 1
 			self.aux = None
 			self.children = {}
 		#else:
@@ -32,16 +27,16 @@ class VEB:
 		else:
 			block = key >> self.numbits
 			if self.aux is None:
-				if self.power > 4:
-					self.aux = VEB(self.power-1, False)
+				if self.numbits > 8:
+					self.aux = VEB(self.numbits, False)
 				else:
-					self.aux = BitVEB(self.power-1)
+					self.aux = BitVEB(self.numbits)
 			self.aux.insert(block)
 			if block not in self.children:
-				if self.power > 4: # only make real VEB for big trees
-					self.children[block] = VEB(self.power-1, False)
+				if self.numbits > 8: # only make real VEB for 16+ bit universe
+					self.children[block] = VEB(self.numbits, False)
 				else:
-					self.children[block] = BitVEB(self.power-1)
+					self.children[block] = BitVEB(self.numbits)
 
 			res = self.children[block].insert(key & ((1 << self.numbits) - 1))
 
@@ -109,8 +104,8 @@ class VEB:
 		return s
 
 class BitVEB(VEB):
-	def __init__(self, power):
-		self.usize = 1 << (1 << power)
+	def __init__(self, exp):
+		self.usize = 1 << exp
 		self.min = self.usize
 		self.max = -1
 		self.bits = 0
@@ -154,7 +149,7 @@ class BitVEB(VEB):
 		return str(self.bits)
 
 if __name__ == "__main__":
-	a = VEB(1000)
+	a = VEB(200)
 	a.insert(5)
 	a.insert(7)
 	a.insert(120)

@@ -82,16 +82,18 @@ class VEB:
 			s += str(i) 
 		return s
 
-a = VEB(4)
-a.insert(5)
-a.insert(7)
-a.insert(120)
-a.insert(88)
-print a.next(80) #88
-print a.next(110) #120
-print a.next(120) #None
-print a.next(3) #5
-a.delete(88) 
-print a.next(80) #120
-a.delete(119) 
-print a.next(110) #120
+if __name__ == "__main__":
+	a = VEB(4)
+	a.insert(5)
+	a.insert(7)
+	a.insert(120)
+	a.insert(88)
+	#list: 5, 7, 88, 120
+	assert(a.next(80) == 88)
+	assert(a.next(110) == 120)
+	assert(a.next(120) == None)
+	assert(a.next(3) == 5)
+	a.delete(88) # list: 5, 7, 120
+	assert(a.next(80) == 120)
+	a.delete(119) 
+	assert(a.next(110) == 120)

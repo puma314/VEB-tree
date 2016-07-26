@@ -32,11 +32,14 @@ class VEB:
 		else:
 			block = key >> self.numbits
 			if self.aux is None:
-				self.aux = VEB(self.power-1, firstCall = False)
+				if self.power > 4:
+					self.aux = VEB(self.power-1, False)
+				else:
+					self.aux = BitVEB(self.power-1)
 			self.aux.insert(block)
 			if block not in self.children:
 				if self.power > 4: # only make real VEB for big trees
-					self.children[block] = VEB(self.power-1, firstCall = False)
+					self.children[block] = VEB(self.power-1, False)
 				else:
 					self.children[block] = BitVEB(self.power-1)
 
@@ -47,16 +50,12 @@ class VEB:
 		return res # return whether a new element was added
 
 	def next(self, key):
-		if self.isEmpty():
+		if self.isEmpty() or key >= self.max:
 			return None
-
-		if self.usize == 2:
-			return self.max # key should be self.min so next is max
-
 		if key < self.min:
 			return self.min
-		if key >= self.max:
-			return None
+		if self.usize == 2:
+			return self.max # key should be self.min so next is max
 
 		block = key >> self.numbits
 		pos = key & ((1<< self.numbits) - 1)
@@ -117,7 +116,7 @@ class BitVEB(VEB):
 		self.bits = 0
 
 	def isEmpty(self):
-		return self.min > self.max
+		return self.bits == 0
 
 	def insert(self, key):
 		if ((self.bits >> key) & 1) == 0:

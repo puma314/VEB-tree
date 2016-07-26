@@ -20,6 +20,7 @@ def sparseRun(n):
 	l = [random.randint(0, lim-1) for i in xrange(n)]
 	l = list(set(l)) # remove repeats
 	l.sort()
+	n = len(l)
 	for i in l:
 		a.insert(i)
 	assert(a.next(-12) == l[0])

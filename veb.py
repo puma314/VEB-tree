@@ -49,14 +49,14 @@ class VEB:
 			return self.min
 
 		block = key >> self.numbits
-		pos = key & ((1<< self.numbits) - 1)
+		pos = key & ((1 << self.numbits) - 1)
 
 		if block in self.children:
 			if pos < self.children[block].max:
-				return key - pos + self.children[block].next(pos) #otherwise nextBlock needed
+				return (key ^ pos) | self.children[block].next(pos) #otherwise nextBlock needed
 
 		nextBlock = self.aux.next(block) #nextBlock should exist
-		return key - pos + self.children[nextBlock].min + ((nextBlock - block)  << self.numbits)
+		return ((key ^ pos) | self.children[nextBlock].min) + ((nextBlock - block)  << self.numbits)
 
 	def delete(self, key):
 		if self.isEmpty():
@@ -76,9 +76,9 @@ class VEB:
 			self.min = self.usize
 			self.max = -1
 		elif self.min == key:
-			self.min = (self.aux.min  << self.numbits) + self.children[self.aux.min].min
+			self.min = (self.aux.min  << self.numbits) | self.children[self.aux.min].min
 		elif self.max == key:
-			self.max = (self.aux.max << self.numbits) + self.children[self.aux.max].max
+			self.max = (self.aux.max << self.numbits) | self.children[self.aux.max].max
 	
 	def __str__(self):
 		s = str((self.usize, self.min, self.max)) + "\nchildren"

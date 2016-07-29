@@ -136,7 +136,11 @@ class BitVEB(VEB):
 		return bin(self.bits)
 
 if __name__ == "__main__":
+<<<<<<< Updated upstream
 	a = createVEB(200)
+=======
+	a = VEB(1000)
+>>>>>>> Stashed changes
 	a.insert(5)
 	a.insert(7)
 	a.insert(120)
